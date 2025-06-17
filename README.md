@@ -27,29 +27,6 @@ This project is a modern full-stack web application built with **Go**, **gRPC**,
 
 ---
 
-## 🗂️ Project Structure
-
-secure-app/
-│
-├── backend/ # Go-based gRPC server
-│ ├── proto/ # .proto files
-│ ├── auth/ # OIDC validation, token parsing
-│ ├── handlers/ # gRPC service logic
-│ ├── middleware/ # Token verification interceptors
-│ └── main.go # Entry point
-│
-├── web/ # Static frontend
-│ ├── index.html
-│ ├── app.js # OIDC client logic
-│ └── style.css
-│
-├── gateway/ # (optional) REST proxy using grpc-gateway
-│ └── main.go
-│
-└── README.md
-
----
-
 ## 🔐 How Authentication Works
 
 1. **Frontend Login Flow**
