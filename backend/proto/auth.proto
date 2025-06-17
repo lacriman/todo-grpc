@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package auth; 
+
+option go_package = "backend/proto/authpb";
+
+service AuthService {
+    rpc Ping (PingRequest) returns (PingResponse);
+    rpc GetProfile (ProfileRequest) returns (ProfileResponse);
+}
+
+message PingRequest {}
+message PingResponse {
+    string message = 1;
+}
+
+message ProfileRequest {
+    string access_token = 1;
+}
+
+message ProfileResponse {
+    string email = 1;
+    string name = 2;
+}
