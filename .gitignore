@@ -2,12 +2,6 @@
 /backend/tmp/
 /backend/tmp/*
 
-# Go modules
-/backend/go.sum
-
-# Go generated protobuf files (optional, if you want to ignore generated pb files)
-/backend/pb/
-
 # VSCode settings
 .vscode/
 

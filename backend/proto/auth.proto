@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth; 
 
-option go_package = "backend/proto/authpb";
+option go_package = "pb/auth;auth";
 
 service AuthService {
     rpc Ping (PingRequest) returns (PingResponse);
