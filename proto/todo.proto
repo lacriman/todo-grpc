@@ -1,21 +1,62 @@
 syntax = "proto3";
 
-package todo; 
+package todo;
 
 option go_package = "pb/todo;todo";
 
+// Service defining CRUD operations for ToDo items.
 service ToDoService {
-    rpc CreateToDo (CreateToDoRequest) returns (CreateToDoResponse); 
+  rpc CreateToDo(CreateToDoRequest) returns (CreateToDoResponse);
+  rpc GetToDo(GetToDoRequest) returns (GetToDoResponse);
+  rpc ListToDo(ListToDoRequest) returns (ListToDoResponse);
+  rpc UpdateToDo(UpdateToDoRequest) returns (UpdateToDoResponse);
+  rpc DeleteToDo(DeleteToDoRequest) returns (DeleteToDoResponse);
+}
+
+// Task representation.
+message ToDo {
+  int64 id = 1;                    // Server-assigned unique ID.
+  string title = 2;                // Task title.
+  optional string description = 3; // Optional details.
+  bool done = 4;                   // Completion status.
 }
 
 message CreateToDoRequest {
-    string title = 1;
-    string description = 2;    
+  string title = 1;
+  optional string description = 2;
 }
 
 message CreateToDoResponse {
-    int32 id = 1;
-    string title = 2;
-    bool done = 3; 
+  ToDo todo = 1;
 }
 
+message GetToDoRequest {
+  int64 id = 1;
+}
+
+message GetToDoResponse {
+  ToDo todo = 1;
+}
+
+message ListToDoRequest {}
+
+message ListToDoResponse {
+  repeated ToDo todos = 1;
+}
+
+message UpdateToDoRequest {
+  int64 id = 1;
+  string title = 2;
+  optional string description = 3;
+  bool done = 4;
+}
+
+message UpdateToDoResponse {
+  ToDo todo = 1;
+}
+
+message DeleteToDoRequest {
+  int64 id = 1;
+}
+
+message DeleteToDoResponse {}
