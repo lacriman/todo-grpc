@@ -1,15 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
+	"net"
+
+	"google.golang.org/grpc"
+
+	"github.com/lacriman/todo-grpc/handlers"
+	pb "github.com/lacriman/todo-grpc/pb/todo"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Welcome to my ToDo app")
-	})
+	lis, err := net.Listen("tcp", ":3000")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
 
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	grpcServer := grpc.NewServer()
+	todoServer := handlers.NewServer()
+	pb.RegisterToDoServiceServer(grpcServer, todoServer)
+
+	log.Println("Server is running on port :3000")
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
