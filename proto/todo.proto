@@ -8,7 +8,8 @@ option go_package = "pb/todo;todo";
 service ToDoService {
   rpc CreateToDo(CreateToDoRequest) returns (CreateToDoResponse);
   rpc GetToDo(GetToDoRequest) returns (GetToDoResponse);
-  rpc ListToDo(ListToDoRequest) returns (ListToDoResponse);
+  // learn stream
+  rpc ListToDo(ListToDoRequest) returns (stream ListToDoResponse);
   rpc UpdateToDo(UpdateToDoRequest) returns (UpdateToDoResponse);
   rpc DeleteToDo(DeleteToDoRequest) returns (DeleteToDoResponse);
 }
@@ -41,7 +42,7 @@ message GetToDoResponse {
 message ListToDoRequest {}
 
 message ListToDoResponse {
-  repeated ToDo todos = 1;
+  ToDo todos = 1;
 }
 
 message UpdateToDoRequest {
