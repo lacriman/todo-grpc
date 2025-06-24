@@ -34,7 +34,7 @@ const (
 type ToDoServiceClient interface {
 	CreateToDo(ctx context.Context, in *CreateToDoRequest, opts ...grpc.CallOption) (*CreateToDoResponse, error)
 	GetToDo(ctx context.Context, in *GetToDoRequest, opts ...grpc.CallOption) (*GetToDoResponse, error)
-	ListToDo(ctx context.Context, in *ListToDoRequest, opts ...grpc.CallOption) (*ListToDoResponse, error)
+	ListToDo(ctx context.Context, in *ListToDoRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListToDoResponse], error)
 	UpdateToDo(ctx context.Context, in *UpdateToDoRequest, opts ...grpc.CallOption) (*UpdateToDoResponse, error)
 	DeleteToDo(ctx context.Context, in *DeleteToDoRequest, opts ...grpc.CallOption) (*DeleteToDoResponse, error)
 }
@@ -67,15 +67,24 @@ func (c *toDoServiceClient) GetToDo(ctx context.Context, in *GetToDoRequest, opt
 	return out, nil
 }
 
-func (c *toDoServiceClient) ListToDo(ctx context.Context, in *ListToDoRequest, opts ...grpc.CallOption) (*ListToDoResponse, error) {
+func (c *toDoServiceClient) ListToDo(ctx context.Context, in *ListToDoRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListToDoResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListToDoResponse)
-	err := c.cc.Invoke(ctx, ToDoService_ListToDo_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ToDoService_ServiceDesc.Streams[0], ToDoService_ListToDo_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[ListToDoRequest, ListToDoResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ToDoService_ListToDoClient = grpc.ServerStreamingClient[ListToDoResponse]
 
 func (c *toDoServiceClient) UpdateToDo(ctx context.Context, in *UpdateToDoRequest, opts ...grpc.CallOption) (*UpdateToDoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -105,7 +114,7 @@ func (c *toDoServiceClient) DeleteToDo(ctx context.Context, in *DeleteToDoReques
 type ToDoServiceServer interface {
 	CreateToDo(context.Context, *CreateToDoRequest) (*CreateToDoResponse, error)
 	GetToDo(context.Context, *GetToDoRequest) (*GetToDoResponse, error)
-	ListToDo(context.Context, *ListToDoRequest) (*ListToDoResponse, error)
+	ListToDo(*ListToDoRequest, grpc.ServerStreamingServer[ListToDoResponse]) error
 	UpdateToDo(context.Context, *UpdateToDoRequest) (*UpdateToDoResponse, error)
 	DeleteToDo(context.Context, *DeleteToDoRequest) (*DeleteToDoResponse, error)
 	mustEmbedUnimplementedToDoServiceServer()
@@ -124,8 +133,8 @@ func (UnimplementedToDoServiceServer) CreateToDo(context.Context, *CreateToDoReq
 func (UnimplementedToDoServiceServer) GetToDo(context.Context, *GetToDoRequest) (*GetToDoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetToDo not implemented")
 }
-func (UnimplementedToDoServiceServer) ListToDo(context.Context, *ListToDoRequest) (*ListToDoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListToDo not implemented")
+func (UnimplementedToDoServiceServer) ListToDo(*ListToDoRequest, grpc.ServerStreamingServer[ListToDoResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method ListToDo not implemented")
 }
 func (UnimplementedToDoServiceServer) UpdateToDo(context.Context, *UpdateToDoRequest) (*UpdateToDoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateToDo not implemented")
@@ -190,23 +199,16 @@ func _ToDoService_GetToDo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ToDoService_ListToDo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListToDoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _ToDoService_ListToDo_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListToDoRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(ToDoServiceServer).ListToDo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ToDoService_ListToDo_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ToDoServiceServer).ListToDo(ctx, req.(*ListToDoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(ToDoServiceServer).ListToDo(m, &grpc.GenericServerStream[ListToDoRequest, ListToDoResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ToDoService_ListToDoServer = grpc.ServerStreamingServer[ListToDoResponse]
 
 func _ToDoService_UpdateToDo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateToDoRequest)
@@ -260,10 +262,6 @@ var ToDoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ToDoService_GetToDo_Handler,
 		},
 		{
-			MethodName: "ListToDo",
-			Handler:    _ToDoService_ListToDo_Handler,
-		},
-		{
 			MethodName: "UpdateToDo",
 			Handler:    _ToDoService_UpdateToDo_Handler,
 		},
@@ -272,6 +270,12 @@ var ToDoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ToDoService_DeleteToDo_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ListToDo",
+			Handler:       _ToDoService_ListToDo_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/todo.proto",
 }

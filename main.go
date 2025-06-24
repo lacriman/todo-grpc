@@ -28,9 +28,9 @@ func main() {
 		grpc.UnaryInterceptor(auth.AuthInterceptor(jwks)),
 	)
 
-
 	todoServer := handlers.NewServer()
 	pb.RegisterToDoServiceServer(grpcServer, todoServer)
+	// enables grpcurl
 	reflection.Register(grpcServer)
 
 	log.Println("Server is running on port :3000")

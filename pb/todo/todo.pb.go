@@ -312,7 +312,7 @@ func (*ListToDoRequest) Descriptor() ([]byte, []int) {
 
 type ListToDoResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Todos         []*ToDo                `protobuf:"bytes,1,rep,name=todos,proto3" json:"todos,omitempty"`
+	Todos         *ToDo                  `protobuf:"bytes,1,opt,name=todos,proto3" json:"todos,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -347,7 +347,7 @@ func (*ListToDoResponse) Descriptor() ([]byte, []int) {
 	return file_proto_todo_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ListToDoResponse) GetTodos() []*ToDo {
+func (x *ListToDoResponse) GetTodos() *ToDo {
 	if x != nil {
 		return x.Todos
 	}
@@ -571,7 +571,7 @@ const file_proto_todo_proto_rawDesc = "" +
 	".todo.ToDoR\x04todo\"\x11\n" +
 	"\x0fListToDoRequest\"4\n" +
 	"\x10ListToDoResponse\x12 \n" +
-	"\x05todos\x18\x01 \x03(\v2\n" +
+	"\x05todos\x18\x01 \x01(\v2\n" +
 	".todo.ToDoR\x05todos\"\x84\x01\n" +
 	"\x11UpdateToDoRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
@@ -584,12 +584,12 @@ const file_proto_todo_proto_rawDesc = "" +
 	".todo.ToDoR\x04todo\"#\n" +
 	"\x11DeleteToDoRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"\x14\n" +
-	"\x12DeleteToDoResponse2\xc3\x02\n" +
+	"\x12DeleteToDoResponse2\xc5\x02\n" +
 	"\vToDoService\x12?\n" +
 	"\n" +
 	"CreateToDo\x12\x17.todo.CreateToDoRequest\x1a\x18.todo.CreateToDoResponse\x126\n" +
-	"\aGetToDo\x12\x14.todo.GetToDoRequest\x1a\x15.todo.GetToDoResponse\x129\n" +
-	"\bListToDo\x12\x15.todo.ListToDoRequest\x1a\x16.todo.ListToDoResponse\x12?\n" +
+	"\aGetToDo\x12\x14.todo.GetToDoRequest\x1a\x15.todo.GetToDoResponse\x12;\n" +
+	"\bListToDo\x12\x15.todo.ListToDoRequest\x1a\x16.todo.ListToDoResponse0\x01\x12?\n" +
 	"\n" +
 	"UpdateToDo\x12\x17.todo.UpdateToDoRequest\x1a\x18.todo.UpdateToDoResponse\x12?\n" +
 	"\n" +

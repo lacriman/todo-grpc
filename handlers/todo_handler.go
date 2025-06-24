@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"context"
-	"maps"
-	"slices"
 
 	pb "github.com/lacriman/todo-grpc/pb/todo"
 	"google.golang.org/grpc/codes"
@@ -43,9 +41,14 @@ func (s *Server) GetToDo(ctx context.Context, req *pb.GetToDoRequest) (*pb.GetTo
 	return &pb.GetToDoResponse{Todo: todo}, nil
 }
 
-func (s *Server) ListToDo(ctx context.Context, req *pb.ListToDoRequest) (*pb.ListToDoResponse, error) {
-	vals := slices.Collect(maps.Values(s.todos))
-	return &pb.ListToDoResponse{Todos: vals}, nil
+func (s *Server) ListToDo(req *pb.ListToDoRequest, stream pb.ToDoService_ListToDoServer) error {
+	for _, todo := range s.todos {
+		res := &pb.ListToDoResponse{Todos: todo}
+		if err := stream.Send(res); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *Server) UpdateToDo(ctx context.Context, req *pb.UpdateToDoRequest) (*pb.UpdateToDoResponse, error) {
