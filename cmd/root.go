@@ -1,5 +1,5 @@
 /*
-Copyright © 2025 Yaroslav Proskurin <y.proskurin@rto.de>
+Copyright © 2025 Yaroslav Proskurin <proskurin.yarik@gmail.com>
 */
 package cmd
 
