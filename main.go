@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"github.com/lacriman/todo-grpc/auth"
+	"github.com/lacriman/todo-grpc/cmd"
 	"github.com/lacriman/todo-grpc/handlers"
 	pb "github.com/lacriman/todo-grpc/pb/todo"
 )
@@ -37,4 +38,6 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
+	cmd.Execute()
 }
