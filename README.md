@@ -15,36 +15,6 @@ This project is a secure, full-stack command-line ToDo application written in **
 
 ---
 
----
-
-## 🧭 Architecture
-
-           +----------------------------+
-           |    OAuth2 / OIDC Provider  |
-           | (Auth0 / Google / Keycloak)|
-           +-------------+--------------+
-                         |
-                    [JWT Access Token]
-                         |
-+------------------------v------------------------+
-| gRPC Backend (Go) |
-| - Auth Interceptor |
-| - Token verification via JWKS |
-| - ToDoService: Create, Get, List, Update, Del |
-| - In-memory storage (map[int]*ToDo) |
-+------------------------+------------------------+
-|
-[gRPC Client with Token]
-|
-+-----------v-----------+
-| CLI App |
-| (Go + Cobra) |
-| - Token injection |
-| - Command parsing |
-+----------------------+
-
----
-
 ## 🔐 Authentication Flow
 
 1. User logs in via browser (OIDC provider) and gets an `access_token`
