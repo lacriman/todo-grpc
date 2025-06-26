@@ -48,6 +48,8 @@ func init() {
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	RootCmd.AddCommand(createCmd)
+	RootCmd.AddCommand(listCmd)
+	RootCmd.AddCommand(deleteCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.
